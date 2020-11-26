@@ -28,7 +28,10 @@ public class State {
 	}
 	
 	public State (State state) {
-		this.board = Arrays.copyOf(state.getBoard(), state.getBoard().length);
+		board = new int[ROWS][COLS];
+		for (int i = 0; i < ROWS; i++) {
+			board[i] = Arrays.copyOf(state.getBoard()[i], ROWS);
+		}
 	}
 
 	public void addGUI(GUI gui){
@@ -67,7 +70,7 @@ public class State {
 	}
 	
 	boolean validMove(Move move) {
-		if (isEmpty(move.row, move.col) && flipDiscs(move)) {
+		if (isEmpty(move.row, move.col) && wouldFlip(move)) {
 			board[move.row][move.col] = 0;
 			return true;
 		}
@@ -122,6 +125,45 @@ public class State {
 			}
 		}
 		return flipped;
+	}
+	
+	boolean wouldFlip(Move move) {
+		int x;
+		int y;
+		int temp;
+		boolean searching;
+		boolean flipped = false;
+		
+		board[move.row][move.col] = move.color;
+		
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				x = move.row + i;
+				y = move.col + j;
+				
+				if (!checkBounds(x, y)) {
+					continue;
+				}
+				
+				temp = board[x][y];
+				
+				if (temp == 0 || temp == move.color) continue;
+				
+				searching = true;
+				while (searching && checkBounds(x, y)) {
+					x += i;
+					y += j;
+					temp = board[x][y];
+					
+					if (temp == move.color) {
+						return true;
+					} else if (temp == 0) {
+						searching = false;
+					} 
+				}
+			}
+		}
+		return false;
 	}
 
 	public int[][] getBoard(){

@@ -26,7 +26,7 @@ public class Game {
 				board.repaint();
 				turn = PlayerColor.BLACK;
 			} else if (turn == PlayerColor.BLACK) {
-				Move move = agent.abPruning(board);
+				Move move = agent.abPruning(new State(board));
 				board.addDisc(move);
 				board.printBoard();
 				board.repaint();
