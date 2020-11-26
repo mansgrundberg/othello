@@ -13,6 +13,8 @@ public class State {
 	private int white;
 	private int black;
 
+	GUI gui;
+
 	public State (int size) {
 		board = new int[size][size];
 		white = 0;
@@ -22,7 +24,10 @@ public class State {
 		board[4][3] = -1;
 		board[4][4] = 1;
 	}
-	
+
+	public void addGUI(GUI gui){
+		this.gui = gui;
+	}
 	
 	boolean addDisc(Move move) {
 		boolean ok = false;
@@ -30,6 +35,7 @@ public class State {
 			if (flipDiscs(move)) {
 			printBoard();
 			countDiscs();
+			gui.repaint();
 			ok = true;
 			} else {
 				board[move.row][move.col] = 0; // If no discs were flipped, reset board
@@ -87,6 +93,10 @@ public class State {
 		}
 		return flipped;
 	}
+
+	public int[][] getBoard(){
+		return board;
+	}
 	
 	public void printBoard() {
 		System.out.println("  0 1 2 3 4 5 6 7");
@@ -97,6 +107,7 @@ public class State {
 			}
 			System.out.println();
 		}
+		gui.repaint();
 	}
 	
 	public char toColor(int x) {

@@ -7,6 +7,8 @@ public class Test {
 	public static void main(String[] args) {
 		State state = new State(8);
 		Scanner sc = new Scanner(System.in);
+		GUI g = new GUI(state);
+		state.addGUI(g);
 		
 		state.printBoard();
 		
