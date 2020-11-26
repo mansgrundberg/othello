@@ -14,7 +14,7 @@ public class Game {
 		board = new State();
 		// board.addGUI(new GUI(board));
 		player = new Player(PlayerColor.WHITE);
-		agent = new AI(PlayerColor.BLACK, PlayerColor.WHITE, 6);
+		agent = new AI(PlayerColor.BLACK, PlayerColor.WHITE, 5);
 		turn = PlayerColor.WHITE;
 	}
 
@@ -25,6 +25,7 @@ public class Game {
 				if (playerHasMoves) {
 					playerMove();
 				} else {
+					System.out.println("Player has no legal moves... Agent's turn!");
 					turn = PlayerColor.BLACK;
 				}
 
@@ -32,6 +33,7 @@ public class Game {
 				if (aiHasMoves) {
 					agentMove();
 				} else {
+					System.out.println("Agent has no legal moves... Player's turn!");
 					turn = PlayerColor.WHITE;
 				}
 			}

@@ -13,7 +13,7 @@ public class Evaluator {
 	public double evaluate(State state) {
 		this.state = state;
 		
-		return discs() + corners();
+		return discs() + 2*corners();
 	}
 	
 	private double discs() {
