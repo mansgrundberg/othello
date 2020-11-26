@@ -13,12 +13,17 @@ public class State {
 	private int white;
 	private int black;
 
+	GUI gui;
+
 	public State (int size) {
 		board = new int[size][size];
 		white = 0;
 		black = 0;
 	}
-	
+
+	public void addGUI(GUI gui){
+		this.gui = gui;
+	}
 	
 	public void addDisc(int row, int col, int color) {
 		if (validMove(row, col)) {
@@ -27,6 +32,7 @@ public class State {
 		}
 		printBoard();
 		countDiscs();
+		gui.repaint();
 	}
 	
 	boolean validMove(int row, int col) {
@@ -77,6 +83,10 @@ public class State {
 			}
 		}
 	}
+
+	public int[][] getBoard(){
+		return board;
+	}
 	
 	boolean checkBounds(int x, int y) {
 		return (x > 0 && x < State.COLS - 1 && y > 0 && y < State.ROWS - 1); 
@@ -101,6 +111,7 @@ public class State {
 			}
 			System.out.println();
 		}
+		gui.repaint();
 	}
 	
 	public char toColor(int x) {
