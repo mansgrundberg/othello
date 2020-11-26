@@ -181,7 +181,7 @@ public class State {
 			}
 			System.out.println();
 		}
-		gui.repaint();
+		System.out.println();
 	}
 
 	public char toColor(int x) {
