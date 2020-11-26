@@ -22,6 +22,7 @@ public class AI {
 		for (Move m : moves) {
 			if (m.value == v) {
 				move = m;
+				break;
 			}
 		}
 		return move;
