@@ -19,7 +19,9 @@ public class AI {
 		int v = max(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
 
 		List<Move> moves = state.validMoves(maxColor.value);
+		System.out.println("V = " + v);
 		for (Move m : moves) {
+			System.out.println("Move value: " + m.value);
 			if (m.value == v) {
 				move = m;
 				break;
