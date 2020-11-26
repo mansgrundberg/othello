@@ -20,7 +20,7 @@ public class Game {
 		board.printBoard();
 		while (!board.isTerminal()) {
 			if (turn == PlayerColor.WHITE) {
-				if (!board.validMoves(PlayerColor.WHITE.value).isEmpty()) {
+				if (!board.getValidMoves(PlayerColor.WHITE.value).isEmpty()) {
 					if (board.addDisc(getInput())) {
 						update();
 					} else {

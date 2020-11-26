@@ -17,7 +17,6 @@ public class Evaluator {
 	}
 	
 	private double discs() {
-		System.out.println(state.getWhiteDiscs() + " " + state.getBlackDiscs());
 		return 100 * (state.getBlackDiscs()) / (state.getWhiteDiscs() + state.getBlackDiscs());
 	}
 	

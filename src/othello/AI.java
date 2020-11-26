@@ -7,6 +7,7 @@ public class AI {
 	PlayerColor minColor;
 	Evaluator evaluator = new Evaluator();
 	private int maxDepth;
+	private List<Move> moveList;
 
 	public AI(PlayerColor agentColor, PlayerColor pColor, int depth) {
 		maxColor = agentColor;
@@ -18,10 +19,8 @@ public class AI {
 		Move move = null;
 		int v = max(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
 
-		List<Move> moves = state.validMoves(maxColor.value);
-		System.out.println("V = " + v);
-		for (Move m : moves) {
-			System.out.println("Move value: " + m.value);
+		// List<Move> moves = state.getValidMoves(maxColor.value);
+		for (Move m : moveList) {
 			if (m.value == v) {
 				move = m;
 				break;
@@ -31,13 +30,15 @@ public class AI {
 	}
 
 	private int max(State state, int alpha, int beta, int depth) {
-		List<Move> moves = state.validMoves(maxColor.value);
+		List<Move> moves = state.getValidMoves(maxColor.value);
+		if (depth == 0) {
+			moveList = moves;
+		}
+		
 		if (state.isTerminal() || depth == maxDepth || moves.isEmpty()) { // or cutoff
 			return (int) utility(state);
 		}
 		int v = Integer.MIN_VALUE;
-		
-		System.out.println(depth);
 		
 		for (Move move : moves) {
 			State temp = new State(state);
@@ -53,14 +54,12 @@ public class AI {
 	}
 
 	private int min(State state, int alpha, int beta, int depth) {
-		List<Move> moves = state.validMoves(minColor.value);
+		List<Move> moves = state.getValidMoves(minColor.value);
 		if (state.isTerminal() || depth == maxDepth || moves.isEmpty()) { // or cutoff
 			return (int) utility(state);
 		}
 		int v = Integer.MAX_VALUE;
 
-		System.out.println(depth);
-		
 		for (Move move : moves) {
 			State temp = new State(state);
 			temp.addDisc(move);

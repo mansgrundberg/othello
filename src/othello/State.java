@@ -13,6 +13,7 @@ public class State {
 	static final int COLS = 8;
 	static final int ROWS = 8;
 	GUI gui;
+	List<Move> validMoves;
 
 	public State() {
 		board = new int[ROWS][COLS];
@@ -45,18 +46,22 @@ public class State {
 		return false;
 	}
 
-	public List<Move> validMoves(int color) {
-		List<Move> list = new ArrayList<>();
+	public List<Move> getValidMoves(int color) {
+		validMoves(color);
+		return this.validMoves;
+	}
+	
+	private void validMoves(int color) {
+		validMoves = new ArrayList<>();
 
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLS; j++) {
 				Move move = new Move(i, j, color);
 				if (validMove(move)) {
-					list.add(move);
+					validMoves.add(move);
 				}
 			}
 		}
-		return list;
 	}
 
 	boolean validMove(Move move) {
@@ -93,9 +98,9 @@ public class State {
 					continue;
 
 				searching = true;
+				x += i;
+				y += j;
 				while (searching && checkBounds(x, y)) {
-					x += i;
-					y += j;
 					temp = board[x][y];
 
 					if (temp == move.color) {
@@ -114,6 +119,8 @@ public class State {
 					} else if (temp == 0) {
 						searching = false;
 					}
+					x += i;
+					y += j;
 				}
 			}
 		}
@@ -143,9 +150,9 @@ public class State {
 					continue;
 
 				searching = true;
+				x += i;
+				y += j;
 				while (searching && checkBounds(x, y)) {
-					x += i;
-					y += j;
 					temp = board[x][y];
 
 					if (temp == move.color) {
@@ -153,6 +160,8 @@ public class State {
 					} else if (temp == 0) {
 						searching = false;
 					}
+					x += i;
+					y += j;
 				}
 			}
 		}
@@ -194,7 +203,7 @@ public class State {
 	}
 
 	boolean checkBounds(int x, int y) {
-		return (x > 0 && x < State.COLS - 1 && y > 0 && y < State.ROWS - 1);
+		return (x >= 0 && x < State.COLS && y >= 0 && y < State.ROWS);
 	}
 
 	int getWhiteDiscs() {
