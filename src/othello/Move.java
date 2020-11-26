@@ -1,13 +1,15 @@
 package othello;
 
 public class Move {
-	int x;
-	int y;
-	int value;
+	int row;
+	int col;
+	int color;
+	int value; // Assign heuristic values to moves for AI agent
 	
-	public Move (int x, int y) {
-		this.x = x;
-		this.y = y;
+	public Move (int row, int col, int color) {
+		this.row = row;
+		this.col = col;
+		this.color = color;
 	}
 
 }

@@ -8,14 +8,14 @@ public class Test {
 		State state = new State(8);
 		Scanner sc = new Scanner(System.in);
 		
+		state.printBoard();
+		
 		while (sc.hasNext()) {
 		int row = sc.nextInt();
 		int col = sc.nextInt();
 		int color = sc.nextInt();
-		state.addDisc(row, col, color);
-		System.out.println(state.count());
+		if (!state.addDisc(new Move(row, col, color))) System.out.println("Invalid move");
 		}
-		
 	}
 
 }

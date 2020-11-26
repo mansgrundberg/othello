@@ -17,32 +17,40 @@ public class State {
 		board = new int[size][size];
 		white = 0;
 		black = 0;
+		board[3][3] = 1;
+		board[3][4] = -1;
+		board[4][3] = -1;
+		board[4][4] = 1;
 	}
 	
 	
-	public void addDisc(int row, int col, int color) {
-		if (validMove(row, col)) {
-			board[row][col] = color;
-			flipDiscs(row, col, color);
+	boolean addDisc(Move move) {
+		boolean ok = false;
+		if (isEmpty(move.row, move.col)) {
+			if (flipDiscs(move)) {
+			printBoard();
+			countDiscs();
+			ok = true;
+			} else {
+				board[move.row][move.col] = 0; // If no discs were flipped, reset board
+			}
 		}
-		printBoard();
-		countDiscs();
+		return ok;
 	}
 	
-	boolean validMove(int row, int col) {
-		return board[row][col] == 0;
-	}
-	
-	void flipDiscs(int row, int col, int color) {
+	boolean flipDiscs(Move move) {
 		int x;
 		int y;
 		int temp;
 		boolean searching;
+		boolean flipped = false;
+		
+		board[move.row][move.col] = move.color;
 		
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
-				x = row + i;
-				y = col + j;
+				x = move.row + i;
+				y = move.col + j;
 				
 				if (!checkBounds(x, y)) {
 					continue;
@@ -50,7 +58,7 @@ public class State {
 				
 				temp = board[x][y];
 				
-				if (temp == 0 || temp == color) continue;
+				if (temp == 0 || temp == move.color) continue;
 				
 				searching = true;
 				while (searching && checkBounds(x, y)) {
@@ -58,17 +66,18 @@ public class State {
 					y += j;
 					temp = board[x][y];
 					
-					if (temp == color) {
+					if (temp == move.color) {
 						x -= i;
 						y -= j;
 						temp = board[x][y];
-						while (temp != color) {
-							board[x][y] = color;
+						while (temp != move.color) {
+							board[x][y] = move.color;
 							x -= i;
 							y -= j;
 							temp = board[x][y];
 						}
 						searching = false;
+						flipped = true;
 						
 					} else if (temp == 0) {
 						searching = false;
@@ -76,21 +85,8 @@ public class State {
 				}
 			}
 		}
+		return flipped;
 	}
-	
-	boolean checkBounds(int x, int y) {
-		return (x > 0 && x < State.COLS - 1 && y > 0 && y < State.ROWS - 1); 
-	}
-	
-	void countDiscs() {
-		white = (int) Arrays.stream(board).flatMapToInt(Arrays::stream).filter(x -> (x == -1)).count();
-		black = (int) Arrays.stream(board).flatMapToInt(Arrays::stream).filter(x -> (x == 1)).count();
-	}
-	
-	boolean isTerminal() {
-		return (black + white == State.ROWS * State.COLS);
-	}
-	
 	
 	public void printBoard() {
 		System.out.println("  0 1 2 3 4 5 6 7");
@@ -112,5 +108,31 @@ public class State {
 			return '-';
 		}
 	}
+	
+	boolean checkBounds(int x, int y) {
+		return (x > 0 && x < State.COLS - 1 && y > 0 && y < State.ROWS - 1); 
+	}
+	
+	void countDiscs() {
+		white = (int) Arrays.stream(board).flatMapToInt(Arrays::stream).filter(x -> (x == -1)).count();
+		black = (int) Arrays.stream(board).flatMapToInt(Arrays::stream).filter(x -> (x == 1)).count();
+	}
+	
+	int getWhiteDiscs() {
+		return white;
+	}
+	
+	int getBlackDiscs() {
+		return black;
+	}
+	
+	boolean isTerminal() {
+		return (black + white == State.ROWS * State.COLS);
+	}
+	
+	boolean isEmpty(int row, int col) {
+		return board[row][col] == 0;
+	}
+	
 	
 }
