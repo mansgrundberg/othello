@@ -1,6 +1,8 @@
 package othello;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /*
  * Keeps track of actual board / game state
@@ -15,8 +17,8 @@ public class State {
 
 	GUI gui;
 
-	public State (int size) {
-		board = new int[size][size];
+	public State () {
+		board = new int[ROWS][COLS];
 		white = 0;
 		black = 0;
 		board[3][3] = 1;
@@ -24,24 +26,52 @@ public class State {
 		board[4][3] = -1;
 		board[4][4] = 1;
 	}
+	
+	public State (State state) {
+		this.board = Arrays.copyOf(state.getBoard(), state.getBoard().length);
+	}
 
 	public void addGUI(GUI gui){
 		this.gui = gui;
+	}
+	
+	public void repaint() {
+		gui.repaint();
 	}
 	
 	boolean addDisc(Move move) {
 		boolean ok = false;
 		if (isEmpty(move.row, move.col)) {
 			if (flipDiscs(move)) {
-			printBoard();
 			countDiscs();
-			gui.repaint();
 			ok = true;
 			} else {
 				board[move.row][move.col] = 0; // If no discs were flipped, reset board
 			}
 		}
 		return ok;
+	}
+	
+	public List<Move> validMoves(int color) {
+		List<Move> list = new ArrayList<>();
+		
+		for (int i = 0; i < ROWS; i++) {
+			for (int j = 0; j < COLS; j++) {
+				Move move = new Move(i, j, color);
+				if (validMove(move)) {
+					list.add(move);
+				}
+			}
+		}
+		return list;
+	}
+	
+	boolean validMove(Move move) {
+		if (isEmpty(move.row, move.col) && flipDiscs(move)) {
+			board[move.row][move.col] = 0;
+			return true;
+		}
+		return false;
 	}
 	
 	boolean flipDiscs(Move move) {
@@ -102,7 +132,7 @@ public class State {
 		System.out.println("  0 1 2 3 4 5 6 7");
 		for (int i = 0; i < board.length; i++) {
 			System.out.print(i);
-			for (int j = 0; j < board[i].length; j++) {
+			for (int j = 0; j < board.length; j++) {
 				System.out.print(" " + toColor(board[i][j]));
 			}
 			System.out.println();
@@ -130,12 +160,13 @@ public class State {
 	}
 	
 	int getWhiteDiscs() {
-		return white;
+		return (int) Arrays.stream(board).flatMapToInt(Arrays::stream).filter(x -> (x == -1)).count();
 	}
 	
 	int getBlackDiscs() {
-		return black;
+		return (int) Arrays.stream(board).flatMapToInt(Arrays::stream).filter(x -> (x == 1)).count();
 	}
+	
 	
 	boolean isTerminal() {
 		return (black + white == State.ROWS * State.COLS);

@@ -19,7 +19,7 @@ public int[][] board;
         frame.setSize(new Dimension(board.length* (board.length *10), board.length* (board.length *10)+100));
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        int fontSize = 70;
+        int fontSize = 50;
         f = new Font("sansSerif", Font.PLAIN, fontSize);
 
 
@@ -34,12 +34,12 @@ public int[][] board;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
                 try {
-                    if (state.toColor(board[i][j]) == 'B'){
+                    if (state.toColor(board[j][i]) == 'B'){
                         g.setColor(Color.BLACK);
                     }
                     else g.setColor(Color.WHITE);
 
-                    g.drawString(String.valueOf(state.toColor(board[i][j])), i * (board.length*10)+15, j * (board.length*10)+60);
+                    g.drawString(String.valueOf(state.toColor(board[j][i])), i * (board.length*10)+15, j * (board.length*10)+60);
                 }catch (ArrayIndexOutOfBoundsException e){
 
                 }
