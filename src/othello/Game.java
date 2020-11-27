@@ -39,7 +39,7 @@ public class Game {
 		}
 		end();
 	}
-	
+
 	private void playerMove() {
 		Move move = getInput();
 		if (board.addDisc(move)) {
@@ -55,23 +55,25 @@ public class Game {
 		Move move = agent.abPruning(new State(board));
 		long time = (System.currentTimeMillis() - before);
 		
+		board.addDisc(move);
+		printAiMove(move, time);
+		update();
+	}
+
+	private void printAiMove(Move move, long time) {
 		if (time > 5000) {
 			System.out.println("Agent draw time exceeded, ending game..");
 			System.exit(0);
+		} else {
+			System.out.println(
+					"Agent's move: row " + (move.row + 1) + ", col " + (move.col + 1) + "\nDraw Time: " + time + "ms");
+			System.out.println("Depth of search: " + agent.getSearchDepth());
+			System.out.println("Nodes examined: " + agent.getNodes() + "\n");
 		}
-		
-		System.out.println("Agent's move: row " + (move.row + 1) + ", col " + (move.col + 1) + "\nDraw Time: " + time + "ms");
-		System.out.println("Depth of search: " + agent.getSearchDepth());
-		System.out.println("Nodes examined: " + agent.getNodes() + "\n");
-		board.addDisc(move);
-		update();
 	}
-	
-	
-	
+
 	private void update() {
 		board.printBoard();
-		// board.repaint();
 		turn = (turn == Player.WHITE) ? Player.BLACK : Player.WHITE;
 	}
 
@@ -109,25 +111,25 @@ public class Game {
 		Scanner sc = new Scanner(System.in);
 		int row = sc.nextInt();
 		int col = sc.nextInt();
-		
+
 		while (!validateInput(row) || !validateInput(col)) {
 			System.out.println("Invalid row or column, please input a number between 0 and 7 inclusive");
 			row = sc.nextInt();
 			col = sc.nextInt();
 		}
-		return new Move(row-1, col-1, player.value);
+		return new Move(row - 1, col - 1, player.value);
 	}
 
 	private boolean validateInput(int x) {
 		return (x >= 1 && x <= 8);
 	}
-	
+
 	private void welcome() {
 		System.out.println("Welcome to Othello! Try to beat the AI Agent!");
 		System.out.println("You are playing as white. Your turn! \n");
 		board.printBoard();
 	}
-	
+
 	public static void main(String[] args) {
 		Game game = new Game();
 		game.start();

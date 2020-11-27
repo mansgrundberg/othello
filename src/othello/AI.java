@@ -35,19 +35,16 @@ public class AI {
 	private int max(State state, int alpha, int beta, int depth) {
 		List<Move> moves = state.getValidMoves(maxColor.value);
 		nodes++;
-		if (depth == 0) {
+		updateDepth(depth);
+
+		if (depth == 0)
 			moveList = moves;
-		}
-		
-		if (depth > searchDepth) {
-			searchDepth = depth;
-		}
-		
-		if (state.isTerminal() || depth == maxDepth || moves.isEmpty()) { // or cutoff
+
+		if (cutoff(state, depth, moves))
 			return (int) utility(state);
-		}
+
 		int v = Integer.MIN_VALUE;
-		
+
 		for (Move move : moves) {
 			State temp = new State(state);
 			temp.addDisc(move);
@@ -64,14 +61,11 @@ public class AI {
 	private int min(State state, int alpha, int beta, int depth) {
 		List<Move> moves = state.getValidMoves(minColor.value);
 		nodes++;
-		if (depth > searchDepth) {
-			searchDepth = depth;
-		}
-		
-		if (state.isTerminal() || depth == maxDepth || moves.isEmpty()) { // or cutoff
+		updateDepth(depth);
+
+		if (cutoff(state, depth, moves))
 			return (int) utility(state);
-		}
-		
+
 		int v = Integer.MAX_VALUE;
 
 		for (Move move : moves) {
@@ -86,7 +80,7 @@ public class AI {
 		}
 		return v;
 	}
-	
+
 	public int getSearchDepth() {
 		return searchDepth;
 	}
@@ -94,9 +88,19 @@ public class AI {
 	public int getNodes() {
 		return this.nodes;
 	}
-	
+
 	private double utility(State state) {
 		return evaluator.evaluate(state);
+	}
+
+	private boolean cutoff(State state, int depth, List<Move> moves) {
+		return (state.isTerminal() || depth == maxDepth || moves.isEmpty());
+	}
+
+	private void updateDepth(int depth) {
+		if (depth > searchDepth) {
+			searchDepth = depth;
+		}
 	}
 
 }
