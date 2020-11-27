@@ -4,37 +4,36 @@ import java.util.Scanner;
 
 public class Game {
 	State board;
-	Player player;
 	AI agent;
-	PlayerColor turn;
+	Player player;
+	Player turn;
 	boolean playerHasMoves = true;
 	boolean aiHasMoves = true;
 
 	public Game() {
 		board = new State();
-		// board.addGUI(new GUI(board));
-		player = new Player(PlayerColor.WHITE);
-		agent = new AI(PlayerColor.BLACK, PlayerColor.WHITE, 5);
-		turn = PlayerColor.WHITE;
+		player = Player.WHITE;
+		agent = new AI(Player.BLACK, Player.WHITE, 6);
+		turn = Player.WHITE;
 	}
 
 	void start() {
 		welcome();
 		while (!ending()) {
-			if (turn == PlayerColor.WHITE) {
+			if (turn == Player.WHITE) {
 				if (playerHasMoves) {
 					playerMove();
 				} else {
 					System.out.println("Player has no legal moves... Agent's turn!");
-					turn = PlayerColor.BLACK;
+					turn = Player.BLACK;
 				}
 
-			} else if (turn == PlayerColor.BLACK) {
+			} else if (turn == Player.BLACK) {
 				if (aiHasMoves) {
 					agentMove();
 				} else {
 					System.out.println("Agent has no legal moves... Player's turn!");
-					turn = PlayerColor.WHITE;
+					turn = Player.WHITE;
 				}
 			}
 		}
@@ -44,7 +43,7 @@ public class Game {
 	private void playerMove() {
 		Move move = getInput();
 		if (board.addDisc(move)) {
-			System.out.println("Player's move: row " + move.row + ", col " + move.col + "\n");
+			System.out.println("Player's move: row " + (move.row + 1) + ", col " + (move.col + 1) + "\n");
 			update();
 		} else {
 			System.out.println("Invalid move..");
@@ -58,9 +57,12 @@ public class Game {
 		
 		if (time > 5000) {
 			System.out.println("Agent draw time exceeded, ending game..");
+			System.exit(0);
 		}
 		
-		System.out.println("Agent's move: row " + move.row + ", col " + move.col + "\nDraw Time: " + time + "\n");
+		System.out.println("Agent's move: row " + (move.row + 1) + ", col " + (move.col + 1) + "\nDraw Time: " + time + "ms");
+		System.out.println("Depth of search: " + agent.getSearchDepth());
+		System.out.println("Nodes examined: " + agent.getNodes() + "\n");
 		board.addDisc(move);
 		update();
 	}
@@ -70,12 +72,12 @@ public class Game {
 	private void update() {
 		board.printBoard();
 		// board.repaint();
-		turn = (turn == PlayerColor.WHITE) ? PlayerColor.BLACK : PlayerColor.WHITE;
+		turn = (turn == Player.WHITE) ? Player.BLACK : Player.WHITE;
 	}
 
 	private void validMoves() {
 		aiHasMoves = (board.getValidMoves(agent.maxColor.value).isEmpty()) ? false : true;
-		playerHasMoves = (board.getValidMoves(player.color.value).isEmpty()) ? false : true;
+		playerHasMoves = (board.getValidMoves(player.value).isEmpty()) ? false : true;
 	}
 
 	private boolean ending() {
@@ -113,11 +115,11 @@ public class Game {
 			row = sc.nextInt();
 			col = sc.nextInt();
 		}
-		return new Move(row, col, player.color.value);
+		return new Move(row-1, col-1, player.value);
 	}
 
 	private boolean validateInput(int x) {
-		return (x >= 0 && x <= 7);
+		return (x >= 1 && x <= 8);
 	}
 	
 	private void welcome() {

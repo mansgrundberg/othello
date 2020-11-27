@@ -12,8 +12,6 @@ public class State {
 	private int[][] board;
 	static final int COLS = 8;
 	static final int ROWS = 8;
-	GUI gui;
-	List<Move> validMoves;
 
 	public State() {
 		board = new int[ROWS][COLS];
@@ -26,33 +24,13 @@ public class State {
 	public State(State state) {
 		board = copyArr(state.getBoard());
 	}
-
-	public void addGUI(GUI gui) {
-		this.gui = gui;
-	}
-
-	public void repaint() {
-		gui.repaint();
-	}
-
+	
 	boolean addDisc(Move move) {
-		if (isEmpty(move.row, move.col)) {
-			if (flipDiscs(move)) {
-				return true;
-			} else {
-				board[move.row][move.col] = 0; // If no discs were flipped, reset board
-			}
-		}
-		return false;
+		return (isEmpty(move.row, move.col) && flipDiscs(move, true));
 	}
 
 	public List<Move> getValidMoves(int color) {
-		validMoves(color);
-		return this.validMoves;
-	}
-	
-	private void validMoves(int color) {
-		validMoves = new ArrayList<>();
+		List<Move> validMoves = new ArrayList<>();
 
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLS; j++) {
@@ -62,110 +40,73 @@ public class State {
 				}
 			}
 		}
+		return validMoves;
 	}
 
 	boolean validMove(Move move) {
+		boolean valid = false;
 		int[][] copy = copyArr(board);
-		if (isEmpty(move.row, move.col) && wouldFlip(move)) {
-			board = copy;
-			return true;
+		if (isEmpty(move.row, move.col) && flipDiscs(move, false)) {
+			valid = true;
 		}
 		board = copy;
-		return false;
+		return valid;
 	}
-
-	boolean flipDiscs(Move move) {
+	
+	/*
+	 * If flip = true, actually flip discs. Otherwise just check if move is legal.
+	 */
+	boolean flipDiscs(Move move, boolean flip) {
 		int x;
 		int y;
 		int temp;
-		boolean searching;
 		boolean flipped = false;
-
 		board[move.row][move.col] = move.color;
 
+		// Check each direction
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				x = move.row + i;
 				y = move.col + j;
 
-				if (!checkBounds(x, y)) {
-					continue;
-				}
-
-				temp = board[x][y];
-
-				if (temp == 0 || temp == move.color)
-					continue;
-
-				searching = true;
-				x += i;
-				y += j;
-				while (searching && checkBounds(x, y)) {
+				boolean first = true;
+				while (checkBounds(x, y)) {
 					temp = board[x][y];
 
-					if (temp == move.color) {
-						x -= i;
-						y -= j;
-						temp = board[x][y];
-						while (temp != move.color) {
-							board[x][y] = move.color;
-							x -= i;
-							y -= j;
-							temp = board[x][y];
-						}
-						searching = false;
-						flipped = true;
+					if (first && (temp == 0 || temp == move.color)) {
+						break;
+					} else {
+						first = false;
+					}
 
+					if (temp == move.color) {
+						if (!flip)
+							return true;
+						flip(x, y, i, j, move);
+						flipped = true;
+						break;
 					} else if (temp == 0) {
-						searching = false;
+						break;
 					}
 					x += i;
 					y += j;
 				}
 			}
 		}
+		board[move.row][move.col] = (flipped) ? move.color : 0;
 		return flipped;
 	}
 
-	boolean wouldFlip(Move move) {
-		int x;
-		int y;
-		int temp;
-		boolean searching;
-
-		board[move.row][move.col] = move.color;
-
-		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; j <= 1; j++) {
-				x = move.row + i;
-				y = move.col + j;
-
-				if (!checkBounds(x, y)) {
-					continue;
-				}
-
-				temp = board[x][y];
-
-				if (temp == 0 || temp == move.color)
-					continue;
-
-				searching = true;
-				x += i;
-				y += j;
-				while (searching && checkBounds(x, y)) {
-					temp = board[x][y];
-
-					if (temp == move.color) {
-						return true;
-					} else if (temp == 0) {
-						searching = false;
-					}
-					x += i;
-					y += j;
-				}
-			}
+	private void flip(int x, int y, int i, int j, Move move) {
+		x -= i;
+		y -= j;
+		int temp = board[x][y];
+		while (temp != move.color) {
+			board[x][y] = move.color;
+			x -= i;
+			y -= j;
+			temp = board[x][y];
 		}
-		return false;
 	}
 
 	public int[][] getBoard() {
@@ -173,9 +114,9 @@ public class State {
 	}
 
 	public void printBoard() {
-		System.out.println("  0 1 2 3 4 5 6 7");
+		System.out.println("  1 2 3 4 5 6 7 8");
 		for (int i = 0; i < board.length; i++) {
-			System.out.print(i);
+			System.out.print(i + 1);
 			for (int j = 0; j < board.length; j++) {
 				System.out.print(" " + toColor(board[i][j]));
 			}
@@ -185,11 +126,12 @@ public class State {
 	}
 
 	public char toColor(int x) {
-		if (x < 0) {
-			return 'W';
-		} else if (x > 0) {
+		switch(x) {
+		case 1:
 			return 'B';
-		} else {
+		case -1:
+			return 'W';
+		default:
 			return '-';
 		}
 	}

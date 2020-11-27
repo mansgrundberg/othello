@@ -1,10 +1,11 @@
 package othello;
 
-public class Player {
-	PlayerColor color;
+public enum Player {
+	WHITE(-1), BLACK(1);
 	
-	public Player(PlayerColor color) {
-		this.color = color;
+	public final int value;
+	
+	private Player(int value) {
+		this.value = value;
 	}
-	
 }
