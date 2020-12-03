@@ -5,7 +5,7 @@ import java.util.List;
 public class AI {
 	Player maxColor;
 	Player minColor;
-	Evaluator evaluator = new Evaluator();
+	Evaluator evaluator;
 	private int maxDepth;
 	private int nodes;
 	private int searchDepth;
@@ -15,6 +15,7 @@ public class AI {
 		maxColor = agentColor;
 		maxDepth = depth;
 		minColor = pColor;
+		evaluator = new Evaluator(maxColor);
 	}
 
 	public Move abPruning(State state) {

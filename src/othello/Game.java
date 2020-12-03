@@ -5,34 +5,46 @@ import java.util.Scanner;
 public class Game {
 	State board;
 	AI agent;
+	AI otherAgent;
 	Player player;
 	Player turn;
 	boolean playerHasMoves = true;
 	boolean aiHasMoves = true;
+	boolean doubleAI;
 
-	public Game() {
+	public Game(boolean doubleAI) {
+		this.doubleAI = doubleAI;
 		board = new State();
 		player = Player.WHITE;
 		agent = new AI(Player.BLACK, Player.WHITE, 6);
 		turn = Player.WHITE;
+		
+		if (doubleAI) {
+			otherAgent = new AI(Player.WHITE, Player.BLACK, 6);
+		}
 	}
+	
 
 	void start() {
 		welcome();
 		while (!ending()) {
 			if (turn == Player.WHITE) {
 				if (playerHasMoves) {
+					if (!doubleAI) {
 					playerMove();
+					} else {
+						agentMove(otherAgent);
+					}
 				} else {
-					System.out.println("Player has no legal moves... Agent's turn!");
+					System.out.println("White has no legal moves... Agent's turn!");
 					turn = Player.BLACK;
 				}
 
 			} else if (turn == Player.BLACK) {
 				if (aiHasMoves) {
-					agentMove();
+					agentMove(agent);
 				} else {
-					System.out.println("Agent has no legal moves... Player's turn!");
+					System.out.println("Black has no legal moves... Player's turn!");
 					turn = Player.WHITE;
 				}
 			}
@@ -50,17 +62,17 @@ public class Game {
 		}
 	}
 
-	private void agentMove() {
+	private void agentMove(AI ai) {
 		long before = System.currentTimeMillis();
-		Move move = agent.abPruning(new State(board));
+		Move move = ai.abPruning(new State(board));
 		long time = (System.currentTimeMillis() - before);
 		
 		board.addDisc(move);
-		printAiMove(move, time);
+		printAiMove(move, time, ai);
 		update();
 	}
 
-	private void printAiMove(Move move, long time) {
+	private void printAiMove(Move move, long time, AI agent) {
 		if (time > 5000) {
 			System.out.println("Agent draw time exceeded, ending game..");
 			System.exit(0);
@@ -131,7 +143,7 @@ public class Game {
 	}
 
 	public static void main(String[] args) {
-		Game game = new Game();
+		Game game = new Game(false);
 		game.start();
 	}
 
